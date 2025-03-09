@@ -18,45 +18,30 @@ public class EmployeeService {
 
     // create employees
     public Employee addEmployee(Employee emp) {
-        try {
-            if (emp.getName() == null || emp.getDepartment() == null) {
-                throw new IllegalArgumentException("Name and Department are required fields.");
-            }
-            return empRepository.save(emp);
 
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println(e.getMessage());
-            return null;
+        if (emp.getName() == null || emp.getDepartment() == null) {
+            throw new IllegalArgumentException("Name and Department are required fields.");
         }
+        return empRepository.save(emp);
 
     }
 
     // get all employee
     public List<Employee> getAllEmployees() {
-        try {
-            return empRepository.findAll();
 
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Error in getting data");
-            return null;
-        }
+        return empRepository.findAll();
+
     }
 
     // get employee by id
     public Optional<Employee> getEmployeeById(Long id) {
-        try {
-            if (id == null) {
-                throw new IllegalArgumentException("Employee Id is required");
-            }
-            return empRepository.findById(id);
 
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println(e.getMessage());
-            return null;
+        if (id == null) {
+            throw new IllegalArgumentException("Employee Id is required");
         }
+        return Optional.of(empRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee with id " + id + "not found")));
+
     }
 
     // update employee
@@ -70,18 +55,12 @@ public class EmployeeService {
     }
 
     // delete employee
-    public String deleteEmployee(Long id) {
-        try {
-            if (id == null) {
-                throw new IllegalArgumentException("Employee Id is required");
-            }
-            empRepository.deleteById(id);
-            return "Deleted";
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println(e.getMessage());
-            return null;
+    public void deleteEmployee(Long id) {
+
+        if (!empRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Employee with id " + id + " not found");
         }
+        empRepository.deleteById(id);
 
     }
 }
