@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,30 +26,38 @@ public class EmployeeController {
 
     // create employee
     @PostMapping
-    public Employee createEmployee(@RequestBody Employee emp) {
-        return empServices.addEmployee(emp);
-    }
+    public ResponseEntity<Employee> createEmployee(@RequestBody Employee emp) {
+
+        Employee savedEmp = empServices.addEmployee(emp);
+        return ResponseEntity.ok(savedEmp);
+
+    }   
 
     // get employee data
     @GetMapping
-    public List<Employee> getAllEmployee() {
-        return empServices.getAllEmployees();
+    public ResponseEntity<List<Employee>> getAllEmployee() {
+        List<Employee> emp= empServices.getAllEmployees();
+        return ResponseEntity.ok(emp);
     }
 
     @GetMapping("/{id}")
-    public Optional<Employee> getEmployeeById(@PathVariable Long id) {
-        return empServices.getEmployeeById(id);
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+        Optional<Employee> emp= empServices.getEmployeeById(id);
+        return emp.map(ResponseEntity:: ok).orElseGet(()->ResponseEntity.notFound().build());
     }
 
     // updating employee
     @PutMapping("/{id}")
-    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee emp) {
-        return empServices.updateEmployee(id, emp);
+    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee emp) {
+        Employee empU= empServices.updateEmployee(id, emp);
+            return ResponseEntity.ok(empU);
+
     }
 
     // delete employee data
     @DeleteMapping("/{id}")
-    public String deleteEmployee(@PathVariable Long id) {
-        return empServices.deleteEmployee(id);
+    public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
+        empServices.deleteEmployee(id);
+        return ResponseEntity.ok("Employee deleted sucefully");
     }
 }
